@@ -17,6 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from apps.setting_apps import CATALOGOS_SETTING_APPS
 from apps.seguridad.setting_apps import SEGURIDAD_SETTING_APPS
 from django.conf.global_settings import AUTH_USER_MODEL
+from datetime import timedelta
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'drf_yasg',
+    'rest_framework_simplejwt',
 
     #APPS CREADAS 
 
@@ -81,10 +85,18 @@ WSGI_APPLICATION = 'Config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',  # Utilizamos el backend mssql-django
+        'NAME': 'Prueba',  # Nombre de la base de datos
+        'HOST': 'LUIS_CALERO',  # IP del servidor SQL Server
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',  # Driver ODBC instalado
+            'trusted_connection': 'yes',  # Habilita la autenticación de Windows
+            'extra_params': 'TrustServerCertificate=yes',  # Útil si estás usando SSL sin un certificado de confianza
+        },
     }
 }
+
+
 
 
 # Password validation
@@ -104,6 +116,26 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=40),
+   'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+   'BLACKLIST_AFTER_ROTATION': True,
+   'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+}
 
 
 # Internationalization

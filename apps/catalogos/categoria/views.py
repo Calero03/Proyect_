@@ -5,8 +5,6 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-# from django.http import Http404
-
 
 from .models import Categoria
 from .serializers import CategoriaSerializers

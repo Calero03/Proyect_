@@ -5,11 +5,16 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.exceptions import NotFound
-
+from apps.seguridad.permissions import *
 from .models import Departamento
 from .serializers import DepartamentoSerializers
+from rest_framework.permissions import IsAuthenticated
 
 class DepartamentoApiView(APIView):
+
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = Departamento
+
 
     @swagger_auto_schema(
         responses={200: DepartamentoSerializers(many=True)},
@@ -48,6 +53,10 @@ class DepartamentoApiView(APIView):
             serializer.save()
             return Response(status=status.HTTP_200_OK, data=serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+    
+    
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = Departamento
 
     @swagger_auto_schema(
         responses={204: None},
@@ -58,6 +67,14 @@ class DepartamentoApiView(APIView):
             departamento = Departamento.objects.get(pk=pk)
         except Departamento.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "Departamento no encontrado."})
+        
+    #PERMISOS...
+        if not self.check_object_permissions(request, departamento):
+            return Response(
+                {"detail": "No tiene permiso para realizar esta acción."},
+                status=status.HTTP_403_FORBIDDEN
+
+            )
         
         departamento.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -5,12 +5,17 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound
+from apps.seguridad.permissions import *
+from rest_framework.permissions import IsAuthenticated
 
 from .models import MetodoPago
 from .serializers import MetodoPagoSerializers
 
 
 class MetodoPagoApiView(APIView):
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = MetodoPago
 
     @swagger_auto_schema(
         responses={200: MetodoPagoSerializers(many=True)},

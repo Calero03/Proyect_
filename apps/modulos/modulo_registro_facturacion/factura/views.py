@@ -5,6 +5,8 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.exceptions import NotFound
+from apps.seguridad.permissions import *
+from rest_framework.permissions import IsAuthenticated
 
 
 from .models import Factura
@@ -12,6 +14,8 @@ from .serializers import FacturaSerializers
 
 
 class FacturaApiView(APIView):
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = Factura
 
     @swagger_auto_schema(
         responses={200: FacturaSerializers(many=True)},
@@ -43,11 +47,17 @@ class FacturaApiView(APIView):
         
     @swagger_auto_schema(
         request_body=FacturaSerializers,
-        responses={200: FacturaSerializers, 400: "Bad Request", 404: "Not Found"},
+        responses={200: FacturaSerializers, 400: "Bad Request", 404: "Not Found", 403: "No tiene permiso para realizar esta acción."},
         operation_description="Actualiza una factura existente."
     )
     def put(self, request, pk=None):
         factura = self.get_object(pk)
+        #PERMISOS...
+        if not request.user.has_perm(f'{factura._meta.app_label}.change_{factura._meta.model_name}'):
+            return Response(
+                {"detail": "No tiene permiso para realizar esta acción."},
+                status=status.HTTP_403_FORBIDDEN
+            )
         serializers = FacturaSerializers(factura, data=request.data, partial=True)
         try:
             serializers.is_valid(raise_exception=True)
@@ -68,6 +78,14 @@ class FacturaApiView(APIView):
     )
     def delete(self, request, pk=None):
         factura = self.get_object(pk)
+
+#PERMISO VERIFICACION
+        if not self.check_object_permissions(request, factura):
+            return Response(
+                {"detail": "No tiene permiso para realizar esta acción."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+    
         factura.estado_factura = "False" 
         factura.save()
         return Response({"detail": "Factura anulada exitosamente."}, status=status.HTTP_200_OK)

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+#from decouple import config
+from Config.utils.logging_config import ANSIColorFormatter
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,9 +28,9 @@ from datetime import timedelta
 SECRET_KEY = 'django-insecure-w2#aa^4v*2&19++)-eoxipek9ewf7)9larzprs7$*(6yv^1m(5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -83,19 +85,13 @@ WSGI_APPLICATION = 'Config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',  # Utilizamos el backend mssql-django
-        'NAME': 'Prueba',  # Nombre de la base de datos
-        'HOST': 'LUIS_CALERO',  # IP del servidor SQL Server
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',  # Driver ODBC instalado
-            'trusted_connection': 'yes',  # Habilita la autenticación de Windows
-            'extra_params': 'TrustServerCertificate=yes',  # Útil si estás usando SSL sin un certificado de confianza
-        },
-    }
-}
 
+#DATABASES
+
+
+
+
+# Configura los detalles de conexión a Papertrail
 
 
 
